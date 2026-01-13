@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {authApi} from "../../api/auth";
+import {authApi} from "../../api/authApi";
 import {loginFailure, loginStart, loginSuccess} from "../../store/authSlice";
 import LoginForm from "../../components/auth/LoginForm";
 import {Box, Container, Typography} from "@mui/material";
@@ -31,7 +31,9 @@ const LoginPage = () => {
                 })
             );
 
-            navigate("/user");
+            if (response.role === "MENTOR") navigate("/mentor");
+            else if (response.role === "ADMIN") navigate("/admin");
+            else navigate("/user");
         } catch (err) {
             const msg =
                 err?.response?.data?.message ||

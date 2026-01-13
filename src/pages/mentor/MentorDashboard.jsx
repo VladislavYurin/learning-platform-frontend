@@ -1,39 +1,55 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Container, Typography, Button, Grid } from '@mui/material';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Box, Button, Container, Grid, Typography } from "@mui/material";
 
 const MentorDashboard = () => {
+    const navigate = useNavigate();
+
     return (
         <Container maxWidth="lg">
             <Typography variant="h4" gutterBottom>
-                Панель ментора
+                Кабинет ментора
             </Typography>
 
-            <Grid container spacing={3} mt={4}>
-                <Grid item xs={12} md={6}>
+            <Grid container spacing={3} sx={{ mt: 1 }}>
+                <Grid item xs={12} md={4}>
                     <Button
                         variant="contained"
-                        color="primary"
-                        component={Link}
-                        to="/mentor/courses"
                         fullWidth
                         size="large"
+                        onClick={() => navigate("/mentor/courses")}
                     >
                         Мои курсы
                     </Button>
                 </Grid>
-                <Grid item xs={12} md={6}>
+
+                <Grid item xs={12} md={4}>
+                    <Button
+                        variant="outlined"
+                        fullWidth
+                        size="large"
+                        onClick={() => navigate("/mentor/courses?tab=all")}
+                    >
+                        Все курсы (превью)
+                    </Button>
+                </Grid>
+
+                <Grid item xs={12} md={4}>
                     <Button
                         variant="contained"
                         color="secondary"
                         fullWidth
                         size="large"
-                        disabled
+                        onClick={() => navigate("/mentor/stats")}
                     >
                         Статистика
                     </Button>
                 </Grid>
             </Grid>
+
+            <Box sx={{ mt: 3, color: "text.secondary" }}>
+                Тут будет быстрый обзор (позже): последние ученики, активные курсы, ближайшие слоты.
+            </Box>
         </Container>
     );
 };

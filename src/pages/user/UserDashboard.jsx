@@ -1,55 +1,88 @@
 import React, {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
-import {courseApi} from "../../api/courses";
+import {courseApi} from "../../api/courseApi";
 import CourseList from "../../components/courses/CourseList";
-import {Alert, CircularProgress, Container, Typography} from "@mui/material";
+import {Alert, Box, CircularProgress, Container, Tab, Tabs,} from "@mui/material";
 
 const UserDashboard = () => {
-    const [courses, setCourses] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
     const {user} = useSelector((state) => state.auth);
+
+    const [tab, setTab] = useState(0);
+
+    const [myCourses, setMyCourses] = useState([]);
+    const [previewCourses, setPreviewCourses] = useState([]);
+
+    const [loadingMy, setLoadingMy] = useState(true);
+    const [loadingPreview, setLoadingPreview] = useState(true);
+
+    const [errorMy, setErrorMy] = useState(null);
+    const [errorPreview, setErrorPreview] = useState(null);
 
     useEffect(() => {
         let alive = true;
 
-        const fetchCourses = async () => {
+        const fetchAll = async () => {
             try {
-                const data = await courseApi.getActive();
-                if (alive) setCourses(data);
+                const [my, preview] = await Promise.all([
+                    courseApi.getActive(),
+                    courseApi.getActivePreview(),
+                ]);
+
+                if (!alive) return;
+
+                setMyCourses(my);
+                setPreviewCourses(preview);
             } catch (err) {
                 const msg =
                     err?.response?.data?.message ||
                     err?.message ||
-                    "Не удалось загрузить курсы";
-                if (alive) setError(msg);
+                    "Ошибка загрузки курсов";
+
+                if (alive) {
+                    setErrorMy(msg);
+                    setErrorPreview(msg);
+                }
             } finally {
-                if (alive) setLoading(false);
+                if (alive) {
+                    setLoadingMy(false);
+                    setLoadingPreview(false);
+                }
             }
         };
 
-        fetchCourses();
+        fetchAll();
 
         return () => {
             alive = false;
         };
     }, []);
 
-    if (loading) return <CircularProgress/>;
-    if (error) return <Alert severity="error">{error}</Alert>;
+    const renderTabContent = () => {
+        if (tab === 0) {
+            if (loadingMy) return <CircularProgress/>;
+            if (errorMy) return <Alert severity="error">{errorMy}</Alert>;
+            return <CourseList courses={myCourses} variant="owned"/>;
+        }
+
+        if (tab === 1) {
+            if (loadingPreview) return <CircularProgress/>;
+            if (errorPreview) return <Alert severity="error">{errorPreview}</Alert>;
+            return <CourseList courses={previewCourses} variant="preview"/>;
+        }
+
+        return null;
+    };
 
     return (
         <Container maxWidth="lg">
-            <Typography variant="h4" gutterBottom>
-                Добро пожаловать, {user?.username || "пользователь"}!
-            </Typography>
+            <Box sx={{borderBottom: 1, borderColor: "divider", mb: 2}}>
+                <Tabs value={tab} onChange={(_, v) => setTab(v)}>
+                    <Tab label="Мои курсы"/>
+                    <Tab label="Все курсы"/>
+                </Tabs>
+            </Box>
 
-            <Typography variant="h5" gutterBottom>
-                Доступные курсы
-            </Typography>
-
-            <CourseList courses={courses}/>
+            {renderTabContent()}
         </Container>
     );
 };

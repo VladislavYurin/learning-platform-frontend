@@ -13,8 +13,13 @@ import MentorDashboard from './pages/mentor/MentorDashboard';
 import AdminPanel from './pages/admin/AdminPanel';
 import CoursePage from './pages/courses/CoursePage';
 import ModulePage from './pages/courses/ModulePage';
-import MentorCourses from './pages/mentor/MentorCourses';
-import ModuleEditor from './pages/mentor/ModuleEditor';
+import MentorCoursePage from './pages/mentor/MentorCoursePage';
+import MyProfilePage from "./pages/user/MyProfilePage";
+import MentorProfilePage from "./pages/mentor/MentorProfilePage";
+import MentorModulePage from "./pages/mentor/MentorModulePage";
+import MentorModuleEditorPage from "./pages/mentor/MentorModuleEditorPage";
+import MentorStatsPage from "./pages/mentor/MentorStatsPage";
+import MentorCoursesPage from "./pages/mentor/MentorCoursesPage";
 
 function App() {
     return (
@@ -28,15 +33,23 @@ function App() {
 
                         <Route path="user" element={<ProtectedRoute/>}>
                             <Route index element={<UserDashboard/>}/>
+                            <Route path="profile" element={<MyProfilePage/>}/>
                             <Route path="courses/:courseId" element={<CoursePage/>}/>
                             <Route path="courses/:courseId/modules/:moduleId" element={<ModulePage/>}/>
                         </Route>
 
-                        <Route path="mentor" element={<RoleRoute allowedRoles={['MENTOR']}/>}>
+                        <Route path="mentor" element={<RoleRoute allowedRoles={["MENTOR"]}/>}>
                             <Route index element={<MentorDashboard/>}/>
-                            <Route path="courses" element={<MentorCourses/>}/>
-                            <Route path="courses/:courseId/modules/:moduleId/edit" element={<ModuleEditor/>}/>
+                            <Route path="profile" element={<MentorProfilePage/>}/>
+
+                            <Route path="courses" element={<MentorCoursesPage/>}/>
+                            <Route path="courses/:courseId" element={<MentorCoursePage/>}/>
+                            <Route path="courses/:courseId/modules/:moduleId" element={<MentorModulePage/>}/>
+                            <Route path="courses/:courseId/modules/:moduleId/edit" element={<MentorModuleEditorPage/>}/>
+
+                            <Route path="stats" element={<MentorStatsPage/>}/>
                         </Route>
+
 
                         <Route path="admin" element={<RoleRoute allowedRoles={['ADMIN']}/>}>
                             <Route index element={<AdminPanel/>}/>

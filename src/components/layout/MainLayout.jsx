@@ -27,31 +27,21 @@ const MainLayout = () => {
 
                     <Box sx={{flexGrow: 1}}/>
 
-                    {!isAuthenticated ? (
+                    {isAuthenticated && (
                         <>
-                            <Button color="inherit" component={Link} to="/login">
-                                Войти
-                            </Button>
-                            <Button color="inherit" component={Link} to="/register">
-                                Регистрация
-                            </Button>
-                        </>
-                    ) : (
-                        <>
-                            <Typography sx={{mr: 2}}>
+                            <Button
+                                color="inherit"
+                                onClick={() => navigate(user?.role === "MENTOR" ? "/mentor/profile" : "/user/profile")}
+                                sx={{ mr: 2, textTransform: "none", fontWeight: 500 }}
+                            >
                                 {user?.username || "Пользователь"} ({user?.role || "USER"})
-                            </Typography>
-
-                            {user?.role === "MENTOR" && (
-                                <Button color="inherit" component={Link} to="/mentor">
-                                    Ментор
-                                </Button>
-                            )}
+                            </Button>
                             {user?.role === "ADMIN" && (
                                 <Button color="inherit" component={Link} to="/admin">
                                     Админ
                                 </Button>
                             )}
+
                             <Button color="inherit" component={Link} to="/user">
                                 Кабинет
                             </Button>
