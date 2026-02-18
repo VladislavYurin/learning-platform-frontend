@@ -7,7 +7,7 @@ import CourseCard from "./CourseCard";
  * - "owned"  -> курсы с доступом (кнопка "Открыть")
  * - "preview"-> все активные (без кнопки)
  */
-const CourseList = ({courses, variant = "owned"}) => {
+const CourseList = ({courses, variant = "owned", basePath = "/user"}) => {
     if (!courses || courses.length === 0) {
         return <Typography color="text.secondary">Курсы пока недоступны</Typography>;
     }
@@ -16,7 +16,7 @@ const CourseList = ({courses, variant = "owned"}) => {
         <Grid container spacing={3}>
             {courses.map((course) => (
                 <Grid item xs={12} sm={6} md={4} key={course.id}>
-                    <CourseCard course={course} variant={variant}/>
+                    <CourseCard course={course} variant={variant} basePath={basePath}/>
                 </Grid>
             ))}
         </Grid>

@@ -14,7 +14,7 @@ import {
     Typography,
 } from "@mui/material";
 import {moduleApi} from "../../api/moduleApi";
-import HtmlEditor from "../../components/editor/HtmlEditor"; // поправь путь под свой
+import HtmlEditor from "../../components/editor/HtmlEditor";
 import {accessApi} from "../../api/accessApi";
 
 const MentorModuleEditorPage = () => {
@@ -80,17 +80,17 @@ const MentorModuleEditorPage = () => {
 
         try {
             if (dlg.mode === "giveCourse") {
-                await accessApi.giveCourse({userId: uid, courseId: Number(courseId)});
+                await accessApi.giveCourseAccess({userId: uid, courseId: Number(courseId)});
             } else if (dlg.mode === "revokeCourse") {
-                await accessApi.revokeCourse({userId: uid, courseId: Number(courseId)});
+                await accessApi.revokeCourseAccess({userId: uid, courseId: Number(courseId)});
             } else if (dlg.mode === "giveModule") {
-                await accessApi.giveModule({
+                await accessApi.giveModuleAccess({
                     userId: uid,
                     courseId: Number(courseId),
                     moduleId: Number(moduleId),
                 });
             } else if (dlg.mode === "revokeModule") {
-                await accessApi.revokeModule({
+                await accessApi.revokeModuleAccess({
                     userId: uid,
                     courseId: Number(courseId),
                     moduleId: Number(moduleId),
@@ -119,17 +119,17 @@ const MentorModuleEditorPage = () => {
                 </Button>
 
                 <Button variant="outlined" onClick={() => openDlg("giveCourse")}>
-                    Выдать доступ к курсу (заглушка)
+                    Выдать доступ к курсу
                 </Button>
                 <Button variant="outlined" onClick={() => openDlg("revokeCourse")}>
-                    Отозвать доступ к курсу (заглушка)
+                    Отозвать доступ к курсу
                 </Button>
 
                 <Button variant="outlined" onClick={() => openDlg("giveModule")}>
-                    Выдать доступ к модулю (заглушка)
+                    Выдать доступ к модулю
                 </Button>
                 <Button variant="outlined" onClick={() => openDlg("revokeModule")}>
-                    Отозвать доступ к модулю (заглушка)
+                    Отозвать доступ к модулю
                 </Button>
             </Box>
 

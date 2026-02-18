@@ -17,4 +17,10 @@ export const accessApi = {
         const {data} = await apiClient.post("/access/module/delete-access", payload);
         return data;
     },
+
+    // legacy aliases для совместимости
+    giveCourse: async (payload) => accessApi.giveCourseAccess(payload),
+    revokeCourse: async (payload) => accessApi.revokeCourseAccess(payload),
+    giveModule: async (payload) => accessApi.giveModuleAccess(payload),
+    revokeModule: async (payload) => accessApi.revokeModuleAccess(payload),
 };

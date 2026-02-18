@@ -1,4 +1,5 @@
 import {apiClient} from "./apiClient";
+import {asSlotArray} from "./normalize";
 
 export const slotApi = {
     create: async (payload) => {
@@ -13,13 +14,20 @@ export const slotApi = {
         return data;
     },
 
+    cancel: async (timeSlotId) => {
+        const {data} = await apiClient.post("/slot/cancel", null, {
+            params: {timeSlotId},
+        });
+        return data;
+    },
+
     getForUser: async (mentorId) => {
         const {data} = await apiClient.get("/slot", {params: {mentorId}});
-        return data;
+        return asSlotArray(data);
     },
 
     my: async () => {
         const {data} = await apiClient.get("/slot/my");
-        return data;
+        return asSlotArray(data);
     },
 };

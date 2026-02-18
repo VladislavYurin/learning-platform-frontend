@@ -5,7 +5,7 @@ const HomePage = () => {
     return (
         <Container maxWidth="lg">
             <Typography variant="h2" gutterBottom align="center" mt={4}>
-                Добро пожаловать на образовательную платформу. Убейте меня !!!!!
+                Добро пожаловать на образовательную платформу
             </Typography>
 
             <Typography variant="h5" gutterBottom align="center" mb={4}>

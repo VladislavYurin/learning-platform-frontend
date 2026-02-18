@@ -6,8 +6,14 @@ export const authApi = {
         return data; // JwtAuthResponse
     },
 
-    register: async (payload) => {
-        const { data } = await apiClient.post("/auth/reg", payload);
+    register: async ({ request, avatar }) => {
+        const form = new FormData();
+        form.append("request", new Blob([JSON.stringify(request)], { type: "application/json" }));
+        if (avatar) form.append("avatar", avatar);
+
+        const { data } = await apiClient.post("/auth/reg", form, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
         return data; // JwtAuthResponse
     },
 

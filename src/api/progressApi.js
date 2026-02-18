@@ -1,4 +1,5 @@
 import {apiClient} from "./apiClient";
+import {asArray} from "./normalize";
 
 export const progressApi = {
     courseStats: async (courseId) => {
@@ -7,6 +8,6 @@ export const progressApi = {
     },
     courseUsers: async (courseId) => {
         const {data} = await apiClient.get(`/progress/course/${courseId}/users`);
-        return data;
+        return asArray(data);
     },
 };

@@ -3,7 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {Box, Button, Card, CardActions, CardContent, Stack, Typography,} from "@mui/material";
 import AuthorHover from "./AuthorHover";
 
-const CourseCard = ({course, variant = "owned"}) => {
+const CourseCard = ({course, variant = "owned", basePath = "/user"}) => {
     const navigate = useNavigate();
     const author = course?.author;
     const isPreview = variant === "preview";
@@ -115,7 +115,7 @@ const CourseCard = ({course, variant = "owned"}) => {
                     <Button
                         size="small"
                         variant="contained"
-                        onClick={() => navigate(`/user/courses/${course.id}`)}
+                        onClick={() => navigate(`${basePath}/courses/${course.id}`)}
                     >
                         Открыть
                     </Button>

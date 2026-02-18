@@ -20,6 +20,8 @@ import MentorModulePage from "./pages/mentor/MentorModulePage";
 import MentorModuleEditorPage from "./pages/mentor/MentorModuleEditorPage";
 import MentorStatsPage from "./pages/mentor/MentorStatsPage";
 import MentorCoursesPage from "./pages/mentor/MentorCoursesPage";
+import UserSlotsPage from "./pages/user/UserSlotsPage";
+import MentorSlotsPage from "./pages/mentor/MentorSlotsPage";
 
 function App() {
     return (
@@ -34,6 +36,7 @@ function App() {
                         <Route path="user" element={<ProtectedRoute/>}>
                             <Route index element={<UserDashboard/>}/>
                             <Route path="profile" element={<MyProfilePage/>}/>
+                            <Route path="slots" element={<UserSlotsPage/>}/>
                             <Route path="courses/:courseId" element={<CoursePage/>}/>
                             <Route path="courses/:courseId/modules/:moduleId" element={<ModulePage/>}/>
                         </Route>
@@ -48,6 +51,7 @@ function App() {
                             <Route path="courses/:courseId/modules/:moduleId/edit" element={<MentorModuleEditorPage/>}/>
 
                             <Route path="stats" element={<MentorStatsPage/>}/>
+                            <Route path="slots" element={<MentorSlotsPage/>}/>
                         </Route>
 
 

@@ -12,7 +12,7 @@ const MentorDashboard = () => {
             </Typography>
 
             <Grid container spacing={3} sx={{ mt: 1 }}>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={3}>
                     <Button
                         variant="contained"
                         fullWidth
@@ -23,7 +23,7 @@ const MentorDashboard = () => {
                     </Button>
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={3}>
                     <Button
                         variant="outlined"
                         fullWidth
@@ -34,7 +34,18 @@ const MentorDashboard = () => {
                     </Button>
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={3}>
+                    <Button
+                        variant="outlined"
+                        fullWidth
+                        size="large"
+                        onClick={() => navigate("/mentor/slots")}
+                    >
+                        Слоты
+                    </Button>
+                </Grid>
+
+                <Grid item xs={12} md={3}>
                     <Button
                         variant="contained"
                         color="secondary"
