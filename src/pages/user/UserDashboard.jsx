@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {useSelector} from "react-redux";
+import {useNavigate} from "react-router-dom";
 import {courseApi} from "../../api/courseApi";
 import CourseList from "../../components/courses/CourseList";
-import {Alert, Box, CircularProgress, Container, Tab, Tabs,} from "@mui/material";
+import {Alert, Box, Button, CircularProgress, Container, Tab, Tabs,} from "@mui/material";
 
 const UserDashboard = () => {
-    const {user} = useSelector((state) => state.auth);
+    const navigate = useNavigate();
 
     const [tab, setTab] = useState(0);
 
@@ -61,13 +61,13 @@ const UserDashboard = () => {
         if (tab === 0) {
             if (loadingMy) return <CircularProgress/>;
             if (errorMy) return <Alert severity="error">{errorMy}</Alert>;
-            return <CourseList courses={myCourses} variant="owned"/>;
+            return <CourseList courses={myCourses} variant="owned" basePath="/user"/>;
         }
 
         if (tab === 1) {
             if (loadingPreview) return <CircularProgress/>;
             if (errorPreview) return <Alert severity="error">{errorPreview}</Alert>;
-            return <CourseList courses={previewCourses} variant="preview"/>;
+            return <CourseList courses={previewCourses} variant="preview" basePath="/user"/>;
         }
 
         return null;
@@ -75,6 +75,12 @@ const UserDashboard = () => {
 
     return (
         <Container maxWidth="lg">
+            <Box sx={{display: "flex", justifyContent: "flex-end", mb: 2}}>
+                <Button variant="outlined" onClick={() => navigate("/user/slots")}>
+                    Слоты менторов
+                </Button>
+            </Box>
+
             <Box sx={{borderBottom: 1, borderColor: "divider", mb: 2}}>
                 <Tabs value={tab} onChange={(_, v) => setTab(v)}>
                     <Tab label="Мои курсы"/>

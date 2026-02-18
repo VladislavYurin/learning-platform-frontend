@@ -1,9 +1,35 @@
 import {apiClient} from "./apiClient";
 
+const fetchByOrder = async (courseId, moduleOrderNum) => {
+    const {data} = await apiClient.get(`/module/${courseId}/${moduleOrderNum}`);
+    return data;
+};
+
+const resolveModuleOrderNumber = async (courseId, moduleId) => {
+    const {data: course} = await apiClient.get(`/course/${courseId}`);
+    const modules = Array.isArray(course?.modules) ? course.modules : [];
+
+    const module = modules.find((m) => String(m?.id) === String(moduleId));
+    return module?.moduleOrderNumber ?? null;
+};
+
 export const moduleApi = {
     getById: async (courseId, moduleId) => {
-        const {data} = await apiClient.get(`/module/${courseId}/${moduleId}`);
-        return data; // ModuleDto
+        try {
+            return await fetchByOrder(courseId, moduleId);
+        } catch (error) {
+            const status = error?.response?.status;
+
+            // сохраняем текущий роут c moduleId, но под капотом адаптируем к moduleOrderNum
+            if (status !== 404 && status !== 400) throw error;
+
+            const orderNumber = await resolveModuleOrderNumber(courseId, moduleId);
+            if (orderNumber == null || String(orderNumber) === String(moduleId)) {
+                throw error;
+            }
+
+            return fetchByOrder(courseId, orderNumber);
+        }
     },
 
     create: async (payload) => {
@@ -12,8 +38,21 @@ export const moduleApi = {
     },
 
     delete: async (courseId, moduleId) => {
-        const {data} = await apiClient.delete(`/module/${courseId}/${moduleId}`);
-        return data;
+        try {
+            const {data} = await apiClient.delete(`/module/${courseId}/${moduleId}`);
+            return data;
+        } catch (error) {
+            const status = error?.response?.status;
+            if (status !== 404 && status !== 400) throw error;
+
+            const orderNumber = await resolveModuleOrderNumber(courseId, moduleId);
+            if (orderNumber == null || String(orderNumber) === String(moduleId)) {
+                throw error;
+            }
+
+            const {data} = await apiClient.delete(`/module/${courseId}/${orderNumber}`);
+            return data;
+        }
     },
 
     importMarkdown: async ({file, request}) => {
