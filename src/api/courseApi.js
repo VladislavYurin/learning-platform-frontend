@@ -1,14 +1,20 @@
 import {apiClient} from "./apiClient";
 
 export const courseApi = {
-    getAll: async () => {
-        const {data} = await apiClient.get("/course/all");
-        return data;
+    getAll: async (pageNumber = 0, pageSize = 10) => {
+        const { data } = await apiClient.get("/course/all", {
+            params: { pageNumber, pageSize },
+        });
+
+        return Array.isArray(data) ? data : data.content ?? [];
     },
 
-    getActive: async () => {
-        const {data} = await apiClient.get("/course/all/active");
-        return data;
+    getActive: async (pageNumber = 0, pageSize = 10) => {
+        const { data } = await apiClient.get("/course/all/active", {
+            params: { pageNumber, pageSize },
+        });
+
+        return Array.isArray(data) ? data : data.content ?? [];
     },
 
     getActivePreview: async () => {

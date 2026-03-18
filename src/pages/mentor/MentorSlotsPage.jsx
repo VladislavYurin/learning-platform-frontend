@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     Alert,
     Box,
@@ -10,18 +10,13 @@ import {
     Container,
     Grid,
     MenuItem,
-    Stack,
     TextField,
     Typography,
 } from "@mui/material";
-import {slotApi} from "../../api/slotApi";
-
-const formatDateTime = (value) => {
-    if (!value) return "—";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return String(value);
-    return date.toLocaleString("ru-RU");
-};
+import { slotApi } from "../../api/slotApi";
+import SlotsWeekCalendar, {
+    startOfWeek,
+} from "../../components/slots/SlotsWeekCalendar";
 
 const toIso = (value) => {
     if (!value) return undefined;
@@ -42,6 +37,8 @@ const MentorSlotsPage = () => {
     });
 
     const [slots, setSlots] = useState([]);
+    const [weekStart, setWeekStart] = useState(startOfWeek(new Date()));
+
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [actionLoadingId, setActionLoadingId] = useState(null);
@@ -54,9 +51,11 @@ const MentorSlotsPage = () => {
 
         try {
             const data = await slotApi.my();
-            setSlots(Array.isArray(data) ? data : []);
+            const list = Array.isArray(data) ? data : [];
+            setSlots(list);
         } catch (err) {
-            const msg = err?.response?.data?.message || err?.message || "Не удалось загрузить слоты";
+            const msg =
+                err?.response?.data?.message || err?.message || "Не удалось загрузить слоты";
             setError(msg);
         } finally {
             setLoading(false);
@@ -66,6 +65,17 @@ const MentorSlotsPage = () => {
     useEffect(() => {
         loadSlots();
     }, []);
+
+    const visibleSlots = useMemo(() => {
+        const start = new Date(weekStart);
+        const end = new Date(weekStart);
+        end.setDate(end.getDate() + 7);
+
+        return slots.filter((slot) => {
+            const slotDate = new Date(slot.startTime);
+            return slotDate >= start && slotDate < end;
+        });
+    }, [slots, weekStart]);
 
     const handleChange = (e) => {
         setForm((prev) => ({
@@ -94,7 +104,8 @@ const MentorSlotsPage = () => {
             setSuccess("Слот успешно создан");
             await loadSlots();
         } catch (err) {
-            const msg = err?.response?.data?.message || err?.message || "Не удалось создать слот";
+            const msg =
+                err?.response?.data?.message || err?.message || "Не удалось создать слот";
             setError(msg);
         } finally {
             setSaving(false);
@@ -111,7 +122,8 @@ const MentorSlotsPage = () => {
             setSuccess("Слот отменён");
             await loadSlots();
         } catch (err) {
-            const msg = err?.response?.data?.message || err?.message || "Не удалось отменить слот";
+            const msg =
+                err?.response?.data?.message || err?.message || "Не удалось отменить слот";
             setError(msg);
         } finally {
             setActionLoadingId(null);
@@ -119,12 +131,20 @@ const MentorSlotsPage = () => {
     };
 
     return (
-        <Container maxWidth="lg">
+        <Container maxWidth="xl">
             <Typography variant="h4" gutterBottom>
                 Управление слотами
             </Typography>
 
-            <Card elevation={0} sx={{border: "1px solid", borderColor: "divider", borderRadius: 3, mb: 3}}>
+            <Card
+                elevation={0}
+                sx={{
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 3,
+                    mb: 3,
+                }}
+            >
                 <CardContent>
                     <Typography variant="h6" gutterBottom>
                         Новый слот
@@ -139,10 +159,11 @@ const MentorSlotsPage = () => {
                                 value={form.startTime}
                                 onChange={handleChange}
                                 fullWidth
-                                InputLabelProps={{shrink: true}}
+                                InputLabelProps={{ shrink: true }}
                                 required
                             />
                         </Grid>
+
                         <Grid item xs={12} md={6}>
                             <TextField
                                 name="endTime"
@@ -151,10 +172,11 @@ const MentorSlotsPage = () => {
                                 value={form.endTime}
                                 onChange={handleChange}
                                 fullWidth
-                                InputLabelProps={{shrink: true}}
+                                InputLabelProps={{ shrink: true }}
                                 required
                             />
                         </Grid>
+
                         <Grid item xs={12} md={4}>
                             <TextField
                                 select
@@ -168,6 +190,7 @@ const MentorSlotsPage = () => {
                                 <MenuItem value="GROUP">GROUP</MenuItem>
                             </TextField>
                         </Grid>
+
                         <Grid item xs={12} md={4}>
                             <TextField
                                 select
@@ -182,17 +205,19 @@ const MentorSlotsPage = () => {
                                 <MenuItem value="ACCEPTING">ACCEPTING</MenuItem>
                             </TextField>
                         </Grid>
+
                         <Grid item xs={12} md={4}>
                             <TextField
                                 name="maxParticipants"
                                 label="Макс. участников"
                                 type="number"
-                                inputProps={{min: 1, max: 50}}
+                                inputProps={{ min: 1, max: 50 }}
                                 value={form.maxParticipants}
                                 onChange={handleChange}
                                 fullWidth
                             />
                         </Grid>
+
                         <Grid item xs={12}>
                             <TextField
                                 name="meetingLink"
@@ -203,6 +228,7 @@ const MentorSlotsPage = () => {
                                 required
                             />
                         </Grid>
+
                         <Grid item xs={12}>
                             <TextField
                                 name="description"
@@ -216,7 +242,8 @@ const MentorSlotsPage = () => {
                         </Grid>
                     </Grid>
                 </CardContent>
-                <CardActions sx={{px: 2, pb: 2, pt: 0}}>
+
+                <CardActions sx={{ px: 2, pb: 2, pt: 0 }}>
                     <Button variant="contained" onClick={handleCreate} disabled={saving}>
                         {saving ? "Создание..." : "Создать слот"}
                     </Button>
@@ -224,84 +251,47 @@ const MentorSlotsPage = () => {
             </Card>
 
             {error && (
-                <Alert severity="error" sx={{mb: 2}}>
+                <Alert severity="error" sx={{ mb: 2 }}>
                     {error}
                 </Alert>
             )}
+
             {success && (
-                <Alert severity="success" sx={{mb: 2}}>
+                <Alert severity="success" sx={{ mb: 2 }}>
                     {success}
                 </Alert>
             )}
 
-            <Typography variant="h6" gutterBottom>
-                Мои слоты
-            </Typography>
-
             {loading ? (
-                <CircularProgress/>
-            ) : slots.length === 0 ? (
-                <Typography color="text.secondary">Слотов пока нет</Typography>
+                <CircularProgress />
             ) : (
-                <Grid container spacing={2}>
-                    {slots.map((slot) => (
-                        <Grid item xs={12} md={6} key={slot.id || slot.requestId}>
-                            <Card elevation={0} sx={{border: "1px solid", borderColor: "divider", borderRadius: 3}}>
-                                <CardContent>
-                                    <Typography variant="h6" gutterBottom>
-                                        {slot.slotMeetingType || "Встреча"} ({slot.slotType || "—"})
-                                    </Typography>
+                <>
+                    {visibleSlots.length === 0 && (
+                        <Typography color="text.secondary" sx={{ mb: 2 }}>
+                            На выбранной неделе слотов нет
+                        </Typography>
+                    )}
 
-                                    <Typography variant="body2" color="text.secondary">
-                                        Начало: {formatDateTime(slot.startTime)}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Окончание: {formatDateTime(slot.endTime)}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Статус: {slot.isActive === false ? "Неактивен" : "Активен"}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Участников: {slot.participants?.length || 0} / {slot.maxParticipants ?? "—"}
-                                    </Typography>
-
-                                    {slot.description && <Typography sx={{mt: 1}}>{slot.description}</Typography>}
-                                    {slot.meetingLink && (
-                                        <Typography variant="body2" sx={{mt: 1}}>
-                                            Ссылка: {slot.meetingLink}
-                                        </Typography>
-                                    )}
-
-                                    {slot.participants?.length > 0 && (
-                                        <Box sx={{mt: 1.5}}>
-                                            <Typography variant="subtitle2">Участники:</Typography>
-                                            <Stack spacing={0.4} sx={{mt: 0.5}}>
-                                                {slot.participants.map((p) => (
-                                                    <Typography key={p.id} variant="body2" color="text.secondary">
-                                                        {p.firstName || p.lastName
-                                                            ? `${p.firstName || ""} ${p.lastName || ""}`.trim()
-                                                            : p.username || `ID: ${p.id}`}
-                                                    </Typography>
-                                                ))}
-                                            </Stack>
-                                        </Box>
-                                    )}
-                                </CardContent>
-
-                                <CardActions sx={{px: 2, pb: 2, pt: 0}}>
-                                    <Button
-                                        variant="outlined"
-                                        size="small"
-                                        disabled={Boolean(actionLoadingId)}
-                                        onClick={() => handleCancel(slot.id)}
-                                    >
-                                        {actionLoadingId === slot.id ? "Отмена..." : "Отменить слот"}
-                                    </Button>
-                                </CardActions>
-                            </Card>
-                        </Grid>
-                    ))}
-                </Grid>
+                    <Box sx={{ overflowX: "auto" }}>
+                        <SlotsWeekCalendar
+                            slots={visibleSlots}
+                            weekStart={weekStart}
+                            onPrevWeek={() => {
+                                const d = new Date(weekStart);
+                                d.setDate(d.getDate() - 7);
+                                setWeekStart(d);
+                            }}
+                            onNextWeek={() => {
+                                const d = new Date(weekStart);
+                                d.setDate(d.getDate() + 7);
+                                setWeekStart(d);
+                            }}
+                            onToday={() => setWeekStart(startOfWeek(new Date()))}
+                            onCancelSlot={handleCancel}
+                            actionLoadingId={actionLoadingId}
+                        />
+                    </Box>
+                </>
             )}
         </Container>
     );
